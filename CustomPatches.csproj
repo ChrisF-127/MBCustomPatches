@@ -62,6 +62,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Class1.cs" />
     <Compile Include="CustomPatches.cs" />
     <Compile Include="HarmonyPatches.cs" />
     <Compile Include="MCMSettings.cs" />
