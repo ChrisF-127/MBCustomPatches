@@ -1,0 +1,36 @@
+﻿<Module>
+	<Name value="Custom Patches"/>
+	<Id value="sy.CustomPatches"/>
+	<Version value="v1.0.0"/>
+	<DefaultModule value="false"/>
+	<SingleplayerModule value="true"/>
+	<MultiplayerModule value="false"/>
+	<Official value="false"/>
+	<DependedModules>
+		<DependedModule Id="Native"/>
+		<DependedModule Id="SandBoxCore"/>
+		<DependedModule Id="Sandbox"/>
+		<DependedModule Id="StoryMode"/>
+		<DependedModule Id="Bannerlord.Harmony"/>
+		<DependedModule Id="Bannerlord.MBOptionScreen"/>
+	</DependedModules>
+	<DependedModuleMetadata>
+		<DependedModuleMetadata id="Native" order="LoadBeforeThis"/>
+		<DependedModuleMetadata id="SandBoxCore" order="LoadBeforeThis"/>
+		<DependedModuleMetadata id="Sandbox" order="LoadBeforeThis"/>
+		<DependedModuleMetadata id="StoryMode" order="LoadBeforeThis"/>
+		<DependedModuleMetadata id="Bannerlord.Harmony" order="LoadBeforeThis"/>
+		<DependedModuleMetadata id="Bannerlord.MBOptionScreen" order="LoadBeforeThis"/>
+	</DependedModuleMetadata>
+	<SubModules>
+		<SubModule>
+			<Name value="CustomPatches"/>
+			<DLLName value="CustomPatches.dll"/>
+			<SubModuleClassType value="CustomPatches.CustomPatches"/>
+			<Tags>
+				<Tag key="DedicatedServerType" value="none"/>
+				<Tag key="IsNoRenderModeElement" value="false"/>
+			</Tags>
+		</SubModule>
+	</SubModules>
+</Module>
