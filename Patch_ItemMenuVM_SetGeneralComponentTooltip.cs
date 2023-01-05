@@ -39,14 +39,14 @@ namespace CustomPatches
 			//  2 -- ldloc.0 NULL[Label13]
 			//    ++ ldarg.0 NULL[Label13]
 			//    ++ ldarg.0 NULL
-			//    ++ ldfld TaleWorlds.Core.ViewModelCollection.ItemVM ItemMenuVM::_targetItem
-			//    ++ call static System.Void CustomPatches.Patch_ItemMenuVM_SetGeneralComponentTooltip::CreateCultureProperty(...)
+			//    ++ ldfld ItemVM ItemMenuVM::_targetItem
+			//    ++ call static Void Patch_ItemMenuVM_SetGeneralComponentTooltip::CreateCultureProperty(...)
 			//    ++ ldloc.0 NULL
 			//  3    ldc.r4 1
-			//  4    stfld System.Single <> c__DisplayClass108_0::equipmentWeightMultiplier
+			//  4    stfld Single <> c__DisplayClass108_0::equipmentWeightMultiplier
 			//  5    ldarg.0 NULL
-			//  6    ldfld TaleWorlds.Core.BasicCharacterObject ItemMenuVM::_character
-			//  7    isinst TaleWorlds.CampaignSystem.CharacterObject
+			//  6    ldfld BasicCharacterObject ItemMenuVM::_character
+			//  7    isinst CharacterObject
 			//  8 -- dup NULL
 			//  9    stloc.1 NULL
 			//    ++ ldloc.1 NULL
@@ -55,7 +55,7 @@ namespace CustomPatches
 			for (int i = 0; i < list.Count - 9; i++)
 			{
 				if (list[i + 0].opcode == OpCodes.Call
-					&& list[i + 0].operand is MethodInfo mi && mi.DeclaringType == typeof(ItemMenuVM) && mi.Name == "CreateColoredProperty"
+					&& list[i + 0].operand is MethodInfo mi && mi == CreateColoredPropertyMethodInfo
 					&& list[i + 1].opcode == OpCodes.Pop
 					&& list[i + 2].opcode == OpCodes.Ldloc_0
 					// -- insert here --
