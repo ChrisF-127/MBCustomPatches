@@ -86,7 +86,7 @@ namespace CustomPatches
 			}
 
 			if (!applied)
-				FileLog.Log($"{nameof(CustomPatches)}: failed to apply {nameof(Patch_ItemMenuVM_SetGeneralComponentTooltip)}");
+				Helper.Message($"{nameof(CustomPatches)}: failed to apply {nameof(Patch_ItemMenuVM_SetGeneralComponentTooltip)}");
 			return list;
 		}
 
@@ -129,8 +129,7 @@ namespace CustomPatches
 			}
 			catch (Exception exc)
 			{
-				FileLog.Log($"{exc.GetType()}\n{exc.Message}");
-				InformationManager.DisplayMessage(new InformationMessage($"{nameof(CustomPatches)}.{nameof(CreateCultureProperty)}: caused an exception: {exc.GetType()}", new Color(1f, 0f, 0f)));
+				Helper.Message($"{nameof(CustomPatches)}.{nameof(CreateCultureProperty)}: caused an exception: {exc.GetType()}: {exc.Message}");
 			}
 		}
 	}
