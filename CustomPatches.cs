@@ -47,7 +47,7 @@ namespace CustomPatches
 			}
 			catch (Exception exc)
 			{
-				FileLog.Log($"{exc.GetType()} {exc.Message}\n{exc.StackTrace}");
+				Helper.Message($"{exc.GetType()} {exc.Message}\n{exc.StackTrace}", false);
 			}
 		}
 	}

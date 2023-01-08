@@ -1,20 +1,30 @@
 ﻿using HarmonyLib;
+using SandBox.GameComponents;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using TaleWorlds.CampaignSystem.ViewModelCollection.Inventory;
+using System.Reflection.Emit;
+using TaleWorlds.Core;
 using TaleWorlds.Engine;
 using TaleWorlds.Library;
 using TaleWorlds.MountAndBlade;
-using TaleWorlds.MountAndBlade.View.MissionViews;
-using TaleWorlds.MountAndBlade.View.MissionViews.Order;
-using TaleWorlds.MountAndBlade.View.Screens;
-using TaleWorlds.MountAndBlade.ViewModelCollection.Order;
 
 namespace CustomPatches
 {
+#if false
+	[HarmonyPatch(typeof(SandboxAgentApplyDamageModel))]
+	internal static class Patch_SandboxAgentApplyDamageModel_DecideMissileWeaponFlags
+	{
+		[HarmonyPostfix]
+		[HarmonyPatch("DecideMissileWeaponFlags")]
+		internal static void DecideMissileWeaponFlags(Agent attackerAgent, MissionWeapon missileWeapon, ref WeaponFlags missileWeaponFlags)
+		{
+			//Helper.Message($"DecideMissileWeaponFlags {attackerAgent?.Name} {missileWeapon} {missileWeaponFlags}", false, Colors.White);
+#warning TODO missile pierce
+			//missileWeaponFlags |= WeaponFlags.MultiplePenetration;
+		}
+	}
+#endif
 
 	//[HarmonyPatch(typeof(MissionOrderVM))]
 	//internal static class Patch
