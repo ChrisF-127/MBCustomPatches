@@ -1,5 +1,4 @@
 ﻿using HarmonyLib;
-using Mono.Cecil.Cil;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,13 +8,10 @@ using System.Text;
 using System.Threading.Tasks;
 using TaleWorlds.CampaignSystem.CampaignBehaviors;
 using TaleWorlds.CampaignSystem.GameComponents;
-using TaleWorlds.CampaignSystem.Settlements;
-using TaleWorlds.CampaignSystem.ViewModelCollection;
-using TaleWorlds.CampaignSystem.ViewModelCollection.Inventory;
-using TaleWorlds.Core;
-using TaleWorlds.Core.ViewModelCollection;
-using TaleWorlds.Core.ViewModelCollection.Information;
-using TaleWorlds.Library;
+using TaleWorlds.GauntletUI;
+using TaleWorlds.GauntletUI.BaseTypes;
+using TaleWorlds.GauntletUI.ExtraWidgets;
+using TaleWorlds.MountAndBlade.GauntletUI.Widgets.Mission;
 
 namespace CustomPatches
 {
@@ -30,16 +26,6 @@ namespace CustomPatches
 		}
 	}
 
-	[HarmonyPatch(typeof(DefaultSettlementEconomyModel), "GetDailyDemandForCategory")]
-	internal static class Patch_DefaultSettlementEconomyModel_GetDailyDemandForCategory
-	{
-		[HarmonyPostfix]
-		public static void Postfix(ref float __result)
-		{
-			__result *= CustomPatches.Settings.TradeDemandModifier;
-		}
-	}
-
 	[HarmonyPatch(typeof(DefaultPartySpeedCalculatingModel), "CalculateBaseSpeedForParty")]
 	internal static class Patch_DefaultPartySpeedCalculatingModel_CalculateBaseSpeedForParty
 	{
@@ -47,6 +33,26 @@ namespace CustomPatches
 		public static void Postfix(ref float __result)
 		{
 			__result *= CustomPatches.Settings.PartySpeedModifier;
+		}
+	}
+
+	[HarmonyPatch(typeof(CrosshairWidget), "OnUpdate")]
+	internal static class Patch_CrosshairWidget_OnUpdate
+	{
+		[HarmonyPostfix]
+		internal static void Postfix(CrosshairWidget __instance)
+		{
+			foreach (var ic in __instance.Children)
+			{
+				if (ic is ValueBasedVisibilityWidget v)
+				{
+					foreach (var vc in v.Children)
+					{
+						if (vc is BrushWidget bw)
+							bw.AlphaFactor = CustomPatches.Settings.CrosshairOpacity;
+					}
+				}
+			}
 		}
 	}
 }
