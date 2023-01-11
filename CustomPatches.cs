@@ -47,7 +47,22 @@ namespace CustomPatches
 			}
 			catch (Exception exc)
 			{
-				Helper.Message($"{exc.GetType()} {exc.Message}\n{exc.StackTrace}", false);
+				Message($"{exc.GetType()} {exc.Message}\n{exc.StackTrace}", false);
+			}
+		}
+
+
+		internal static void Message(string s, bool stacktrace = true, Color? color = null, bool log = true)
+		{
+			try
+			{
+				if (log)
+					FileLog.Log(s + (stacktrace ? $"\n{Environment.StackTrace}" : ""));
+
+				InformationManager.DisplayMessage(new InformationMessage(s, color ?? new Color(1f, 0f, 0f)));
+			}
+			catch
+			{
 			}
 		}
 	}
