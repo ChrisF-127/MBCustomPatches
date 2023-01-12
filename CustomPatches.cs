@@ -27,14 +27,18 @@ namespace CustomPatches
 		protected override void OnBeforeInitialModuleScreenSetAsRoot()
 		{
 			base.OnBeforeInitialModuleScreenSetAsRoot();
+
 			if (isInitialized)
 				return;
-
-			Settings = GlobalSettings<MCMSettings>.Instance;
-			if (Settings == null)
-				throw new Exception("Settings is null");
-
-			isInitialized = true;
+			try
+			{
+				Settings = GlobalSettings<MCMSettings>.Instance ?? throw new Exception("Settings is null");
+				isInitialized = true;
+			}
+			catch (Exception)
+			{
+				Message($"{nameof(CustomPatches)}: Initializing Settings failed!");
+			}
 		}
 
 		protected override void OnSubModuleLoad()
