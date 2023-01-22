@@ -33,4 +33,24 @@
 			</Tags>
 		</SubModule>
 	</SubModules>
+	<Xmls>
+		<XmlNode>                
+			<XmlName id="BodyProperties" path="bodyproperties"/>
+			<IncludedGameTypes>
+				<GameType value = "Campaign"/>
+				<GameType value = "CampaignStoryMode"/>
+				<GameType value = "CustomGame"/>
+				<GameType value = "EditorGame"/>
+			</IncludedGameTypes>
+		</XmlNode> 
+		<XmlNode>                
+			<XmlName id="NPCCharacters" path="spnpccharactertemplates"/>
+			<IncludedGameTypes>
+				<GameType value = "Campaign"/>
+				<GameType value = "CampaignStoryMode"/>
+				<GameType value = "CustomGame"/>
+				<GameType value = "EditorGame"/>
+			</IncludedGameTypes>
+		</XmlNode>   		
+	</Xmls>
 </Module>
