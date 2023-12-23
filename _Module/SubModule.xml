@@ -1,7 +1,7 @@
 ﻿<Module>
 	<Name value="Custom Patches"/>
 	<Id value="sy.CustomPatches"/>
-	<Version value="v1.0.0"/>
+	<Version value="v1.2.8.0"/>
 	<DefaultModule value="false"/>
 	<SingleplayerModule value="true"/>
 	<MultiplayerModule value="false"/>
