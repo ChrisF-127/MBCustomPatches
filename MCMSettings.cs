@@ -34,6 +34,16 @@ namespace CustomPatches
 			GroupOrder = 0)]
 		public bool UnlockAllParts { get; set; } = false;
 
+		[SettingPropertyBool(
+			"Always War",
+			RequireRestart = false,
+			HintText = "Every war proposal is accepted",
+			Order = 1)]
+		[SettingPropertyGroup(
+			"Settings",
+			GroupOrder = 0)]
+		public bool AlwaysWar { get; set; } = false;
+
 		[SettingPropertyButton(
 			"Give me Everything",
 			RequireRestart = false,

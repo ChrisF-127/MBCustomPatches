@@ -8,6 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using TaleWorlds.CampaignSystem;
 using TaleWorlds.CampaignSystem.CampaignBehaviors;
+using TaleWorlds.CampaignSystem.Election;
 using TaleWorlds.CampaignSystem.GameComponents;
 using TaleWorlds.CampaignSystem.TournamentGames;
 using TaleWorlds.CampaignSystem.ViewModelCollection.CharacterDeveloper;
@@ -23,6 +24,27 @@ using TaleWorlds.MountAndBlade.View.MissionViews;
 
 namespace CustomPatches
 {
+	[HarmonyPatch(typeof(DeclareWarDecision), "DetermineSupport")]
+	internal static class Patch_DeclareWarDecision_DetermineSupport
+	{
+		[HarmonyPostfix]
+		public static void Postfix(Clan clan, ref float __result)
+		{
+			if (CustomPatches.Settings.AlwaysWar)
+				__result = 100f;
+		}
+	}
+	[HarmonyPatch(typeof(KingdomDecisionProposalBehavior), "ConsiderWar")]
+	internal static class Patch_KingdomDecisionProposalBehavior_ConsiderWar
+	{
+		[HarmonyPostfix]
+		public static void Postfix(Clan clan, Kingdom kingdom, ref bool __result)
+		{
+			if (CustomPatches.Settings.AlwaysWar)
+				__result = true;
+		}
+	}
+
 	[HarmonyPatch(typeof(CraftingCampaignBehavior), "IsOpened")]
 	internal static class Patch_CraftingCampaignBehavior_IsOpened
 	{
