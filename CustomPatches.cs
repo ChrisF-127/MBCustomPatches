@@ -20,6 +20,7 @@ namespace CustomPatches
 	public class CustomPatches : MBSubModuleBase
 	{
 		public static MCMSettings Settings { get; private set; }
+		public static HarmonyPatches HarmonyPatches { get; private set; }
 
 		private bool isInitialized = false;
 
@@ -31,7 +32,9 @@ namespace CustomPatches
 				return;
 			try
 			{
+				HarmonyPatches = new HarmonyPatches();
 				Settings = GlobalSettings<MCMSettings>.Instance ?? throw new Exception("Settings is null");
+				Settings.ApplySettings();
 				isInitialized = true;
 			}
 			catch (Exception)
@@ -39,21 +42,6 @@ namespace CustomPatches
 				Message($"{nameof(CustomPatches)}: Initializing Settings failed!");
 			}
 		}
-
-		protected override void OnSubModuleLoad()
-		{
-			base.OnSubModuleLoad();
-
-			try
-			{
-				new Harmony("sy.custompatches").PatchAll(Assembly.GetExecutingAssembly());
-			}
-			catch (Exception exc)
-			{
-				Message($"{exc.GetType()} {exc.Message}\n{exc.StackTrace}", false);
-			}
-		}
-
 
 		internal static void Message(string s, bool stacktrace = true, Color? color = null, bool log = true)
 		{
