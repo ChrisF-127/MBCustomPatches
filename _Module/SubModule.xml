@@ -1,5 +1,5 @@
 ﻿<Module>
-	<Name value="Custom Patches"/>
+	<Name value="Syrus Utility Patches"/>
 	<Id value="sy.CustomPatches"/>
 	<Version value="v1.2.8.0"/>
 	<DefaultModule value="false"/>
