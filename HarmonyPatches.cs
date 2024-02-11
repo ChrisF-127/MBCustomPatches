@@ -384,6 +384,7 @@ namespace CustomPatches
 				_patchedScoreboardShowAllTroops = false;
 			}
 		}
+		// Add all troops to the Scoreboard upon initialization
 		private static void SPScoreboardVM_Initialize_Postfix(SPScoreboardVM __instance)
 		{
 			if (PlayerEncounter.Battle != null)
@@ -401,6 +402,7 @@ namespace CustomPatches
 				}
 			}
 		}
+		// Have to disable spawning units being added to the Scoreboard, otherwise they are added twice
 		private static IEnumerable<CodeInstruction> BattleObserverMissionLogic_OnAgentBuild_Transpiler(IEnumerable<CodeInstruction> codeInstructions)
 		{
 			var list = codeInstructions.ToList();
