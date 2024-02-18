@@ -216,14 +216,15 @@ namespace SyUtilityPatches
 			}
 		}
 
+
 		[SettingPropertyButton(
 			"Add all equipment to inventory",
 			RequireRestart = false,
 			HintText = "This was implemented for testing purposes; it will flood your inventory with every possible equipment item!",
-			Content = "ADD EQUIPMENT",
-			Order = 9)]
+			Content = "ALL",
+			Order = 0)]
 		[SettingPropertyGroup(
-			"Settings",
+			"[CHEAT] Equipment",
 			GroupOrder = 0)]
 		public Action AllEquipmentButton { get; set; } = () =>
 		{
@@ -234,35 +235,54 @@ namespace SyUtilityPatches
 					true, true,
 					new TextObject("Yes").ToString(),
 					new TextObject("Cancel").ToString(),
-					action,
+					() => AddEquipment(false),
 					() => { }));
-			void action()
-			{
-				var mainParty = Campaign.Current?.MainParty;
-				if (mainParty != null)
-				{
-					int count = 0;
-					foreach (var item in Items.All)
-					{
-						if (item != null
-							&& !item.IsAnimal 
-							&& !item.IsFood 
-							&& !item.IsTradeGood 
-							//&& item.Culture == mainParty.LeaderHero.Culture 
-							//&& !mainParty.ItemRoster.Any(ir => ir.EquipmentElement.Item == item)
-							)
-						{
-							SyUtilityPatches.Message($"Adding equipment: '{item.Name}'", false, Colors.White);
-							mainParty.ItemRoster.Add(new ItemRosterElement(item, 1));
-							count++;
-						}
-					}
-					InformationManager.DisplayMessage(new InformationMessage($"Done; {count} items added to player inventory", Colors.Cyan));
-				}
-				else
-					InformationManager.DisplayMessage(new InformationMessage("Could not add equipment, player party not found", Colors.Red));
-			}
 		};
+		[SettingPropertyButton(
+			"Add culture equipment to inventory",
+			RequireRestart = false,
+			HintText = "This was implemented for testing purposes; it will give you all equipment of you culture which is not already in your inventory!",
+			Content = "CULTURE",
+			Order = 1)]
+		[SettingPropertyGroup(
+			"[CHEAT] Equipment",
+			GroupOrder = 0)]
+		public Action CultureEquipmentButton { get; set; } = () =>
+		{
+			InformationManager.ShowInquiry(
+				new InquiryData(
+					new TextObject("Adding equipment...").ToString(),
+					new TextObject("Add all valid culture equipment to inventory?").ToString(),
+					true, true,
+					new TextObject("Yes").ToString(),
+					new TextObject("Cancel").ToString(),
+					() => AddEquipment(true),
+					() => { }));
+		};
+		private static void AddEquipment(bool cultureOnly)
+		{
+			var mainParty = Campaign.Current?.MainParty;
+			if (mainParty != null)
+			{
+				int count = 0;
+				foreach (var item in Items.All)
+				{
+					if (item != null
+						&& !item.IsAnimal
+						&& !item.IsFood
+						&& !item.IsTradeGood
+						&& (!cultureOnly || item.Culture == mainParty.LeaderHero.Culture && !mainParty.ItemRoster.Any(element => element.EquipmentElement.Item == item)))
+					{
+						SyUtilityPatches.Message($"Adding equipment: '{item.Name}'", false, Colors.White);
+						mainParty.ItemRoster.Add(new ItemRosterElement(item, 1));
+						count++;
+					}
+				}
+				InformationManager.DisplayMessage(new InformationMessage($"Done; {count} items added to player inventory", Colors.Cyan));
+			}
+			else
+				InformationManager.DisplayMessage(new InformationMessage("Could not add equipment, player party not found", Colors.Red));
+		}
 
 		public void ApplySettings()
 		{
