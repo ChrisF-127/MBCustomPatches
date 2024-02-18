@@ -1,6 +1,6 @@
 ﻿<Module>
 	<Name value="Syrus Utility Patches"/>
-	<Id value="sy.CustomPatches"/>
+	<Id value="sy.SyUtilityPatches"/>
 	<Version value="v1.2.8.0"/>
 	<DefaultModule value="false"/>
 	<SingleplayerModule value="true"/>
@@ -24,9 +24,9 @@
 	</DependedModuleMetadata>
 	<SubModules>
 		<SubModule>
-			<Name value="CustomPatches"/>
-			<DLLName value="CustomPatches.dll"/>
-			<SubModuleClassType value="CustomPatches.CustomPatches"/>
+			<Name value="SyUtilityPatches"/>
+			<DLLName value="SyUtilityPatches.dll"/>
+			<SubModuleClassType value="SyUtilityPatches.SyUtilityPatches"/>
 			<Tags>
 				<Tag key="DedicatedServerType" value="none"/>
 				<Tag key="IsNoRenderModeElement" value="false"/>

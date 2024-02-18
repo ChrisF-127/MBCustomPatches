@@ -31,7 +31,7 @@ using TaleWorlds.MountAndBlade.View.MissionViews;
 using TaleWorlds.MountAndBlade.ViewModelCollection.Scoreboard;
 using TaleWorlds.TwoDimension;
 
-namespace CustomPatches
+namespace SyUtilityPatches
 {
 	public class HarmonyPatches
 	{
@@ -39,8 +39,7 @@ namespace CustomPatches
 
 		public HarmonyPatches()
 		{
-			Harmony = new Harmony("sy.custompatches");
-
+			Harmony = new Harmony("sy.utilitypatches");
 			PatchAgentMeshCrashPrevention();
 		}
 
@@ -72,7 +71,7 @@ namespace CustomPatches
 					foreach (var vc in v.Children)
 					{
 						if (vc is BrushWidget bw)
-							bw.SetAlpha(CustomPatches.Settings.CrosshairOpacity);
+							bw.SetAlpha(SyUtilityPatches.Settings.CrosshairOpacity);
 					}
 				}
 			}
@@ -98,9 +97,35 @@ namespace CustomPatches
 				_patchedUnlockAllParts = false;
 			}
 		}
-		internal static void CraftingCampaignBehavior_IsOpened_Postfix(ref bool __result)
+		private static void CraftingCampaignBehavior_IsOpened_Postfix(ref bool __result)
 		{
 			__result = true;
+		}
+		#endregion
+
+		#region ALLOW ALL QUALITY
+		private bool _patchedAllowAllQuality = false;
+		public void PatchAllowAllQuality(bool apply)
+		{
+			if (apply && !_patchedAllowAllQuality)
+			{
+				Harmony.Patch(
+					AccessTools.Method(typeof(DefaultSmithingModel), "AdjustQualityRegardingDesignTier"),
+					prefix: new HarmonyMethod(typeof(HarmonyPatches), nameof(DefaultSmithingModel_AdjustQualityRegardingDesignTier_Prefix)));
+				_patchedAllowAllQuality = true;
+			}
+			else if (_patchedAllowAllQuality)
+			{
+				Harmony.Unpatch(
+					AccessTools.Method(typeof(DefaultSmithingModel), "AdjustQualityRegardingDesignTier"),
+					AccessTools.Method(typeof(HarmonyPatches), nameof(DefaultSmithingModel_AdjustQualityRegardingDesignTier_Prefix)));
+				_patchedAllowAllQuality = false;
+			}
+		}
+		private static bool DefaultSmithingModel_AdjustQualityRegardingDesignTier_Prefix(ref ItemQuality __result, ItemQuality weaponQuality)
+		{
+			__result = weaponQuality;
+			return false; // do nothing & skip original method
 		}
 		#endregion
 
@@ -160,7 +185,31 @@ namespace CustomPatches
 		}
 		private static void DefaultPartySpeedCalculatingModel_CalculateBaseSpeedForParty_Postfix(ref float __result)
 		{
-			__result *= CustomPatches.Settings.PartySpeedModifier;
+			__result *= SyUtilityPatches.Settings.PartySpeedModifier;
+		}
+		#endregion
+
+		#region MINIMUM THRUST MOMENTUM
+		private bool _patchedMinimumThrustMomentum = false;
+		public void PatchMinimumThrustMomentum(bool apply)
+		{
+			if (apply && !_patchedMinimumThrustMomentum)
+			{
+				Harmony.Patch(
+					AccessTools.Method(typeof(Mission), "MeleeHitCallback"),
+					prefix: new HarmonyMethod(typeof(HarmonyPatches), nameof(Mission_MeleeHitCallback_Prefix)));
+			}
+			else if (_patchedMinimumThrustMomentum)
+			{
+				Harmony.Unpatch(
+					AccessTools.Method(typeof(Mission), "MeleeHitCallback"),
+					AccessTools.Method(typeof(HarmonyPatches), nameof(Mission_MeleeHitCallback_Prefix)));
+			}
+		}
+		private static void Mission_MeleeHitCallback_Prefix(AttackCollisionData collisionData, ref float inOutMomentumRemaining)
+		{
+			if (collisionData.StrikeType == (int)StrikeType.Thrust && inOutMomentumRemaining < SyUtilityPatches.Settings.MinimumThrustMomentum)
+				inOutMomentumRemaining = SyUtilityPatches.Settings.MinimumThrustMomentum;
 		}
 		#endregion
 
@@ -240,7 +289,7 @@ namespace CustomPatches
 			}
 
 			if (!applied)
-				CustomPatches.Message($"{nameof(CustomPatches)}: failed to apply {nameof(ItemMenuVM_SetGeneralComponentTooltip_Transpiler)}");
+				SyUtilityPatches.Message($"{nameof(SyUtilityPatches)}: failed to apply {nameof(ItemMenuVM_SetGeneralComponentTooltip_Transpiler)}");
 			return list;
 		}
 
@@ -283,7 +332,7 @@ namespace CustomPatches
 			}
 			catch (Exception exc)
 			{
-				CustomPatches.Message($"{nameof(CustomPatches)}.{nameof(CreateCultureProperty)}: caused an exception: {exc.GetType()}: {exc.Message}");
+				SyUtilityPatches.Message($"{nameof(SyUtilityPatches)}.{nameof(CreateCultureProperty)}: caused an exception: {exc.GetType()}: {exc.Message}");
 			}
 		}
 		#endregion
@@ -325,35 +374,38 @@ namespace CustomPatches
 			SPScoreboardSideVM __instance,
 			TextObject ____nameTextObject)
 		{
-			var mapEventSide = ____nameTextObject.Value == BattleResultArmy_AttackerText ? MobileParty.MainParty?.MapEvent?.AttackerSide : MobileParty.MainParty?.MapEvent?.DefenderSide;
-			if (mapEventSide != null)
+			if (Mission.Current.HasMissionBehavior<BattleReinforcementsSpawnController>())
 			{
-				var initialPower = __instance.InitialPower;
-				if (initialPower == 0f)
+				var mapEventSide = ____nameTextObject.Value == BattleResultArmy_AttackerText ? MobileParty.MainParty?.MapEvent?.AttackerSide : MobileParty.MainParty?.MapEvent?.DefenderSide;
+				if (mapEventSide != null)
 				{
-					var descriptors = new List<UniqueTroopDescriptor>();
-					mapEventSide.GetAllTroops(ref descriptors);
-					foreach (var desc in descriptors)
+					var initialPower = __instance.InitialPower;
+					if (initialPower == 0f)
 					{
-						var troop = mapEventSide.GetAllocatedTroop(desc) ?? mapEventSide.GetReadyTroop(desc);
-						initialPower += troop.GetPower();
+						var descriptors = new List<UniqueTroopDescriptor>();
+						mapEventSide.GetAllTroops(ref descriptors);
+						foreach (var desc in descriptors)
+						{
+							var troop = mapEventSide.GetAllocatedTroop(desc) ?? mapEventSide.GetReadyTroop(desc);
+							initialPower += troop.GetPower();
+						}
+						_sbSide_InitialPowerPI.SetValue(__instance, initialPower);
 					}
-					_sbSide_InitialPowerPI.SetValue(__instance, initialPower);
-				}
 
-				var currentPower = initialPower;
-				foreach (var party in __instance.Parties)
-				{
-					foreach (var member in party.Members)
+					var currentPower = initialPower;
+					foreach (var party in __instance.Parties)
 					{
-						var score = member.Score;
-						currentPower -= (score.Dead + score.Routed + score.Wounded) * member.Character.GetPower();
+						foreach (var member in party.Members)
+						{
+							var score = member.Score;
+							currentPower -= (score.Dead + score.Routed + score.Wounded) * member.Character.GetPower();
+						}
 					}
-				}
-				_sbSide_CurrentPowerPI.SetValue(__instance, Mathf.Max(currentPower, 0));
+					_sbSide_CurrentPowerPI.SetValue(__instance, Mathf.Max(currentPower, 0));
 
-				//CustomPatches.Message($"{mapEventSide.MissionSide} {initialPower} {currentPower}", false, Colors.Cyan);
-				return false; // skip
+					//CustomPatches.Message($"{mapEventSide.MissionSide} {initialPower} {currentPower}", false, Colors.Cyan);
+					return false; // skip
+				}
 			}
 			return true; // don't skip
 		}
@@ -387,7 +439,7 @@ namespace CustomPatches
 		// Add all troops to the Scoreboard upon initialization
 		private static void SPScoreboardVM_Initialize_Postfix(SPScoreboardVM __instance)
 		{
-			if (PlayerEncounter.Battle != null)
+			if (PlayerEncounter.Battle != null && Mission.Current.HasMissionBehavior<BattleReinforcementsSpawnController>())
 			{
 				addAllTroops(BattleSideEnum.Attacker);
 				addAllTroops(BattleSideEnum.Defender);
@@ -398,7 +450,7 @@ namespace CustomPatches
 				foreach (var party in mapEventSide.Parties)
 				{
 					foreach (var troop in party.Party.MemberRoster.GetTroopRoster())
-						__instance.TroopNumberChanged(side, party.Party, troop.Character, troop.Number);
+						__instance.TroopNumberChanged(side, party.Party, troop.Character, troop.Number - troop.WoundedNumber);
 				}
 			}
 		}
@@ -406,39 +458,34 @@ namespace CustomPatches
 		private static IEnumerable<CodeInstruction> BattleObserverMissionLogic_OnAgentBuild_Transpiler(IEnumerable<CodeInstruction> codeInstructions)
 		{
 			var list = codeInstructions.ToList();
-			var remove = false;
+			var patched = false;
 
-			//CustomPatches.Message($"mmmmmmmmmm BEFORE\n{string.Join("\n", list)}", false, Colors.Cyan);
+			//SyUtilityPatches.Message($"mmmmmmmmmm BEFORE\n{string.Join("\n", list)}", false, Colors.Cyan);
 
-			for (int i = 2; i < list.Count;)
+			for (int i = 0; i < list.Count; i++)
 			{
-				if (!remove)
+				// -- callvirt abstract virtual System.Void TaleWorlds.Core.IBattleObserver::TroopNumberChanged(TaleWorlds.Core.BattleSideEnum side, TaleWorlds.Core.IBattleCombatant battleCombatant, TaleWorlds.Core.BasicCharacterObject character, System.Int32 number, System.Int32 numberKilled, System.Int32 numberWounded, System.Int32 numberRouted, System.Int32 killCount, System.Int32 numberReadyToUpgrade)
+				// ++ call static System.Void SyUtilityPatches.HarmonyPatches::BattleObserverMissionLogic_OnAgentBuild_TroopNumberChanged(TaleWorlds.Core.IBattleObserver BattleObserver, TaleWorlds.MountAndBlade.Agent agent, TaleWorlds.Core.BattleSideEnum side, TaleWorlds.Core.IBattleCombatant battleCombatant, TaleWorlds.Core.BasicCharacterObject character, System.Int32 number, System.Int32 numberKilled, System.Int32 numberWounded, System.Int32 numberRouted, System.Int32 killCount, System.Int32 numberReadyToUpgrade)
+				if (list[i].opcode == OpCodes.Callvirt && list[i].operand is MethodInfo mi1 && mi1.Name == "TroopNumberChanged")
 				{
-					//callvirt virtual TaleWorlds.Core.BattleSideEnum TaleWorlds.MountAndBlade.Team::get_Side()
-					//stloc.0 NULL
-					//ldarg.0 NULL
-					if (list[i - 2].opcode == OpCodes.Callvirt && list[i - 2].operand is MethodInfo mi && mi.Name == "get_Side"
-						&& list[i - 1].opcode == OpCodes.Stloc_0
-						&& list[i].opcode == OpCodes.Ldarg_0)
-						remove = true;
+					list[i] = new CodeInstruction(OpCodes.Call, AccessTools.Method(typeof(HarmonyPatches), nameof(BattleObserverMissionLogic_OnAgentBuild_TroopNumberChanged)));
+					patched = true;
+					break;
 				}
-				else if (remove)
-				{
-					//ldfld System.Int32[] TaleWorlds.MountAndBlade.BattleObserverMissionLogic::_builtAgentCountForSides
-					if (list[i].opcode == OpCodes.Ldfld && list[i].operand is FieldInfo fi && fi.Name == "_builtAgentCountForSides")
-						break;
-					list.RemoveAt(i);
-					continue;
-				}
-				i++;
 			}
 
-			if (!remove)
-				CustomPatches.Message($"{nameof(CustomPatches)}: failed to apply {nameof(BattleObserverMissionLogic_OnAgentBuild_Transpiler)}");
+			if (!patched)
+				SyUtilityPatches.Message($"{nameof(SyUtilityPatches)}: failed to apply {nameof(BattleObserverMissionLogic_OnAgentBuild_Transpiler)}", false);
 
-			//CustomPatches.Message($"mmmmmmmmmm AFTER\n{string.Join("\n", list)}", false, Colors.Cyan);
+			//SyUtilityPatches.Message($"mmmmmmmmmm AFTER\n{string.Join("\n", list)}", false, Colors.Cyan);
 
 			return list;
+		}
+		private static void BattleObserverMissionLogic_OnAgentBuild_TroopNumberChanged(IBattleObserver BattleObserver, BattleSideEnum side, IBattleCombatant battleCombatant, BasicCharacterObject character, 
+			int number = 0, int numberKilled = 0, int numberWounded = 0, int numberRouted = 0, int killCount = 0, int numberReadyToUpgrade = 0)
+		{
+			if (!(PlayerEncounter.Battle != null && Mission.Current.HasMissionBehavior<BattleReinforcementsSpawnController>()))
+				BattleObserver.TroopNumberChanged(side, battleCombatant, character, number, numberKilled, numberWounded, numberRouted, killCount, numberReadyToUpgrade);
 		}
 		#endregion
 		#endregion

@@ -16,25 +16,16 @@ using TaleWorlds.GauntletUI;
 using TaleWorlds.Library;
 using TaleWorlds.Localization;
 
-namespace CustomPatches
+namespace SyUtilityPatches
 {
 	public class MCMSettings : AttributeGlobalSettings<MCMSettings>
 	{
-		public override string Id => "CustomPatches";
-		public override string DisplayName => "Custom Patches";
-		public override string FolderName => "CustomPatches";
+		public override string Id => "SyUtilityPatches";
+		public override string DisplayName => "Syrus Utility Patches";
+		public override string FolderName => "SyUtilityPatches";
 		public override string FormatType => "json";
 
-		public void ApplySettings()
-		{
-			CrosshairOpacity = CrosshairOpacity;
-			UnlockAllParts = UnlockAllParts;
-			AlwaysWar = AlwaysWar;
-			PartySpeedModifier = PartySpeedModifier;
-			ShowCultureInTooltip = ShowCultureInTooltip;
-			CombatBalanceShowAllTroops = CombatBalanceShowAllTroops;
-			ScoreboardShowAllTroops = ScoreboardShowAllTroops;
-		}
+		private HarmonyPatches HarmonyPatches => SyUtilityPatches.HarmonyPatches;
 
 		private float _crosshairOpacity = 1f;
 		[SettingPropertyFloatingInteger(
@@ -54,15 +45,15 @@ namespace CustomPatches
 			set
 			{
 				_crosshairOpacity = value;
-				CustomPatches.HarmonyPatches.PatchCrosshairOpacity(_crosshairOpacity != 1f);
+				HarmonyPatches?.PatchCrosshairOpacity(_crosshairOpacity != 1f);
 			}
 		}
 
 		private bool _unlockAllParts = false;
 		[SettingPropertyBool(
-			"Unlock all smithing parts",
+			"Smithing: Unlock all parts",
 			RequireRestart = false,
-			HintText = "Unlock all smithing parts",
+			HintText = "Unlocks all smithing parts as long as the setting is enabled\nDisabling it will lock all parts that have not previously been unlocked",
 			Order = 1)]
 		[SettingPropertyGroup(
 			"Settings",
@@ -73,7 +64,26 @@ namespace CustomPatches
 			set
 			{
 				_unlockAllParts = value;
-				CustomPatches.HarmonyPatches.PatchUnlockAllParts(_unlockAllParts);
+				HarmonyPatches?.PatchUnlockAllParts(_unlockAllParts);
+			}
+		}
+
+		private bool _allowAllQuality = false;
+		[SettingPropertyBool(
+			"Smithing: Disable quality limited by part tier",
+			RequireRestart = false,
+			HintText = "Smithing quality is limited by the average tier of parts used (None = 1), an average of >=4.5 may be Legendary, >=3.5 Masterwork and below Fine. Enabling this setting removes these limits",
+			Order = 2)]
+		[SettingPropertyGroup(
+			"Settings",
+			GroupOrder = 0)]
+		public bool AllowAllQuality
+		{
+			get => _allowAllQuality;
+			set
+			{
+				_allowAllQuality = value;
+				HarmonyPatches?.PatchAllowAllQuality(_allowAllQuality);
 			}
 		}
 
@@ -82,7 +92,7 @@ namespace CustomPatches
 			"Always War",
 			RequireRestart = false,
 			HintText = "Every war proposal should be accepted",
-			Order = 2)]
+			Order = 3)]
 		[SettingPropertyGroup(
 			"Settings",
 			GroupOrder = 0)]
@@ -92,7 +102,7 @@ namespace CustomPatches
 			set
 			{
 				_alwaysWar = value;
-				CustomPatches.HarmonyPatches.PatchAlwaysWar(_alwaysWar);
+				HarmonyPatches?.PatchAlwaysWar(_alwaysWar);
 			}
 		}
 
@@ -104,7 +114,7 @@ namespace CustomPatches
 			"0.00",
 			RequireRestart = false,
 			HintText = "Modifies the movement speed of all parties [Native: 1.00]",
-			Order = 3)]
+			Order = 4)]
 		[SettingPropertyGroup(
 			"Settings",
 			GroupOrder = 0)]
@@ -114,7 +124,29 @@ namespace CustomPatches
 			set
 			{
 				_partySpeedModifier = value;
-				CustomPatches.HarmonyPatches.PatchPartySpeed(_partySpeedModifier != 1f);
+				HarmonyPatches?.PatchPartySpeed(_partySpeedModifier != 1f);
+			}
+		}
+
+		private float _minimumThrustMomentum = 0f;
+		[SettingPropertyFloatingInteger(
+			"Minimum Thrust Momentum",
+			0f,
+			1f,
+			"0.00",
+			RequireRestart = false,
+			HintText = "Just an attempt to make spears/polearms useable at close range [Native: 0.00]",
+			Order = 5)]
+		[SettingPropertyGroup(
+			"Settings",
+			GroupOrder = 0)]
+		public float MinimumThrustMomentum
+		{
+			get => _minimumThrustMomentum;
+			set
+			{
+				_minimumThrustMomentum = value;
+				HarmonyPatches?.PatchMinimumThrustMomentum(_minimumThrustMomentum != 0f);
 			}
 		}
 
@@ -123,7 +155,7 @@ namespace CustomPatches
 			"Show Culture in Tooltip",
 			RequireRestart = false,
 			HintText = "Shows culture in equipment tooltip",
-			Order = 4)]
+			Order = 6)]
 		[SettingPropertyGroup(
 			"Settings",
 			GroupOrder = 0)]
@@ -133,7 +165,7 @@ namespace CustomPatches
 			set
 			{
 				_showCultureInTooltip = value;
-				CustomPatches.HarmonyPatches.PatchShowCultureInTooltip(_showCultureInTooltip);
+				HarmonyPatches?.PatchShowCultureInTooltip(_showCultureInTooltip);
 			}
 		}
 
@@ -144,7 +176,7 @@ namespace CustomPatches
 			HintText = 
 			"Takes into account all troops for each side for the combat balance bar at the top of the screen" +
 			"\nExclusive with 'Show all troops in scoreboard'!",
-			Order = 5)]
+			Order = 7)]
 		[SettingPropertyGroup(
 			"Settings",
 			GroupOrder = 0)]
@@ -156,7 +188,7 @@ namespace CustomPatches
 				if (value)
 					ScoreboardShowAllTroops = false;
 				_combatBalanceShowAllTroops = value;
-				CustomPatches.HarmonyPatches.PatchCombatBalanceShowAllTroops(_combatBalanceShowAllTroops);
+				HarmonyPatches?.PatchCombatBalanceShowAllTroops(_combatBalanceShowAllTroops);
 				OnPropertyChanged(nameof(CombatBalanceShowAllTroops));
 			}
 		}
@@ -167,7 +199,7 @@ namespace CustomPatches
 			HintText = 
 			"Show all troops for each side in the scoreboard, instead of only spawned troops" +
 			"\nExclusive with 'Consider all troops for combat balance'!",
-			Order = 6)]
+			Order = 8)]
 		[SettingPropertyGroup(
 			"Settings",
 			GroupOrder = 0)]
@@ -179,7 +211,7 @@ namespace CustomPatches
 				if (value)
 					CombatBalanceShowAllTroops = false;
 				_scoreboardShowAllTroops = value;
-				CustomPatches.HarmonyPatches.PatchScoreboardShowAllTroops(_scoreboardShowAllTroops);
+				HarmonyPatches?.PatchScoreboardShowAllTroops(_scoreboardShowAllTroops);
 				OnPropertyChanged(nameof(ScoreboardShowAllTroops));
 			}
 		}
@@ -189,7 +221,7 @@ namespace CustomPatches
 			RequireRestart = false,
 			HintText = "This was implemented for testing purposes; it will flood your inventory with every possible equipment item!",
 			Content = "ADD EQUIPMENT",
-			Order = 7)]
+			Order = 9)]
 		[SettingPropertyGroup(
 			"Settings",
 			GroupOrder = 0)]
@@ -220,7 +252,7 @@ namespace CustomPatches
 							//&& !mainParty.ItemRoster.Any(ir => ir.EquipmentElement.Item == item)
 							)
 						{
-							CustomPatches.Message($"Adding equipment: '{item.Name}'", false, Colors.White);
+							SyUtilityPatches.Message($"Adding equipment: '{item.Name}'", false, Colors.White);
 							mainParty.ItemRoster.Add(new ItemRosterElement(item, 1));
 							count++;
 						}
@@ -231,5 +263,18 @@ namespace CustomPatches
 					InformationManager.DisplayMessage(new InformationMessage("Could not add equipment, player party not found", Colors.Red));
 			}
 		};
+
+		public void ApplySettings()
+		{
+			HarmonyPatches.PatchCrosshairOpacity(CrosshairOpacity != 1f);
+			HarmonyPatches.PatchUnlockAllParts(UnlockAllParts);
+			HarmonyPatches.PatchAllowAllQuality(AllowAllQuality);
+			HarmonyPatches.PatchAlwaysWar(AlwaysWar);
+			HarmonyPatches.PatchPartySpeed(PartySpeedModifier != 1f);
+			HarmonyPatches.PatchMinimumThrustMomentum(MinimumThrustMomentum != 0f);
+			HarmonyPatches.PatchShowCultureInTooltip(ShowCultureInTooltip);
+			HarmonyPatches.PatchCombatBalanceShowAllTroops(CombatBalanceShowAllTroops);
+			HarmonyPatches.PatchScoreboardShowAllTroops(ScoreboardShowAllTroops);
+		}
 	}
 }

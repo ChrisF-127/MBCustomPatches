@@ -1,4 +1,4 @@
-﻿using CustomPatches;
+﻿using SyUtilityPatches;
 using HarmonyLib;
 using MCM.Abstractions.Base.Global;
 using System;
@@ -15,12 +15,12 @@ using TaleWorlds.Core;
 using TaleWorlds.Library;
 using TaleWorlds.MountAndBlade;
 
-namespace CustomPatches
+namespace SyUtilityPatches
 {
-	public class CustomPatches : MBSubModuleBase
+	public class SyUtilityPatches : MBSubModuleBase
 	{
-		public static MCMSettings Settings { get; private set; }
-		public static HarmonyPatches HarmonyPatches { get; private set; }
+		public static MCMSettings Settings { get; private set; } = null;
+		public static HarmonyPatches HarmonyPatches { get; private set; } = null;
 
 		private bool isInitialized = false;
 
@@ -32,14 +32,14 @@ namespace CustomPatches
 				return;
 			try
 			{
-				HarmonyPatches = new HarmonyPatches();
 				Settings = GlobalSettings<MCMSettings>.Instance ?? throw new Exception("Settings is null");
+				HarmonyPatches = new HarmonyPatches();
 				Settings.ApplySettings();
 				isInitialized = true;
 			}
-			catch (Exception)
+			catch (Exception exc)
 			{
-				Message($"{nameof(CustomPatches)}: Initializing Settings failed!");
+				Message($"{nameof(SyUtilityPatches)}: Initializing Settings failed: {exc.GetType()}: {exc.Message}\n{exc.StackTrace}", false);
 			}
 		}
 
