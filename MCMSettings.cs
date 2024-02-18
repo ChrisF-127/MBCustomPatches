@@ -175,7 +175,7 @@ namespace SyUtilityPatches
 			RequireRestart = false,
 			HintText = 
 			"Takes into account all troops for each side for the combat balance bar at the top of the screen" +
-			"\nExclusive with 'Show all troops in scoreboard'!",
+			"\n!! DO NOT TOGGLE IN COMBAT !! -- Exclusive with 'Show all troops in scoreboard'",
 			Order = 7)]
 		[SettingPropertyGroup(
 			"Settings",
@@ -198,7 +198,7 @@ namespace SyUtilityPatches
 			RequireRestart = false,
 			HintText = 
 			"Show all troops for each side in the scoreboard, instead of only spawned troops" +
-			"\nExclusive with 'Consider all troops for combat balance'!",
+			"\n!! DO NOT TOGGLE IN COMBAT !! -- Exclusive with 'Consider all troops for combat balance'",
 			Order = 8)]
 		[SettingPropertyGroup(
 			"Settings",
