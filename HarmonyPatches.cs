@@ -371,9 +371,11 @@ namespace SyUtilityPatches
 			SPScoreboardSideVM __instance,
 			TextObject ____nameTextObject)
 		{
-			if (Mission.Current.HasMissionBehavior<BattleReinforcementsSpawnController>())
+			if (Mission.Current?.HasMissionBehavior<BattleReinforcementsSpawnController>() == true)
 			{
-				var mapEventSide = ____nameTextObject.Value == BattleResultArmy_AttackerText ? MobileParty.MainParty?.MapEvent?.AttackerSide : MobileParty.MainParty?.MapEvent?.DefenderSide;
+				var mapEventSide = ____nameTextObject.Value == BattleResultArmy_AttackerText ? 
+					MobileParty.MainParty?.MapEvent?.AttackerSide : 
+					MobileParty.MainParty?.MapEvent?.DefenderSide;
 				if (mapEventSide != null)
 				{
 					var initialPower = __instance.InitialPower;
@@ -436,7 +438,10 @@ namespace SyUtilityPatches
 		// Add all troops to the Scoreboard upon initialization
 		private static void SPScoreboardVM_Initialize_Postfix(SPScoreboardVM __instance)
 		{
-			if (PlayerEncounter.Battle != null && Mission.Current.HasMissionBehavior<BattleReinforcementsSpawnController>())
+			if (PlayerEncounter.Battle != null 
+				&& Mission.Current?.HasMissionBehavior<BattleReinforcementsSpawnController>() == true
+				&& MobileParty.MainParty?.MapEvent?.AttackerSide != null
+				&& MobileParty.MainParty?.MapEvent?.DefenderSide != null)
 			{
 				addAllTroops(BattleSideEnum.Attacker);
 				addAllTroops(BattleSideEnum.Defender);
@@ -463,7 +468,7 @@ namespace SyUtilityPatches
 			{
 				// -- callvirt abstract virtual System.Void TaleWorlds.Core.IBattleObserver::TroopNumberChanged(TaleWorlds.Core.BattleSideEnum side, TaleWorlds.Core.IBattleCombatant battleCombatant, TaleWorlds.Core.BasicCharacterObject character, System.Int32 number, System.Int32 numberKilled, System.Int32 numberWounded, System.Int32 numberRouted, System.Int32 killCount, System.Int32 numberReadyToUpgrade)
 				// ++ call static System.Void SyUtilityPatches.HarmonyPatches::BattleObserverMissionLogic_OnAgentBuild_TroopNumberChanged(TaleWorlds.Core.IBattleObserver BattleObserver, TaleWorlds.MountAndBlade.Agent agent, TaleWorlds.Core.BattleSideEnum side, TaleWorlds.Core.IBattleCombatant battleCombatant, TaleWorlds.Core.BasicCharacterObject character, System.Int32 number, System.Int32 numberKilled, System.Int32 numberWounded, System.Int32 numberRouted, System.Int32 killCount, System.Int32 numberReadyToUpgrade)
-				if (list[i].opcode == OpCodes.Callvirt && list[i].operand is MethodInfo mi1 && mi1.Name == "TroopNumberChanged")
+				if (list[i].opcode == OpCodes.Callvirt && list[i].operand is MethodInfo mi && mi.Name == "TroopNumberChanged")
 				{
 					list[i] = new CodeInstruction(OpCodes.Call, AccessTools.Method(typeof(HarmonyPatches), nameof(BattleObserverMissionLogic_OnAgentBuild_TroopNumberChanged)));
 					patched = true;
@@ -481,7 +486,10 @@ namespace SyUtilityPatches
 		private static void BattleObserverMissionLogic_OnAgentBuild_TroopNumberChanged(IBattleObserver BattleObserver, BattleSideEnum side, IBattleCombatant battleCombatant, BasicCharacterObject character, 
 			int number = 0, int numberKilled = 0, int numberWounded = 0, int numberRouted = 0, int killCount = 0, int numberReadyToUpgrade = 0)
 		{
-			if (!(PlayerEncounter.Battle != null && Mission.Current.HasMissionBehavior<BattleReinforcementsSpawnController>()))
+			if (!(PlayerEncounter.Battle != null
+				&& Mission.Current?.HasMissionBehavior<BattleReinforcementsSpawnController>() == true
+				&& MobileParty.MainParty?.MapEvent?.AttackerSide != null
+				&& MobileParty.MainParty?.MapEvent?.DefenderSide != null))
 				BattleObserver.TroopNumberChanged(side, battleCombatant, character, number, numberKilled, numberWounded, numberRouted, killCount, numberReadyToUpgrade);
 		}
 		#endregion
