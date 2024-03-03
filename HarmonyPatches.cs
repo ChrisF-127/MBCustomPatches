@@ -195,6 +195,7 @@ namespace SyUtilityPatches
 				Harmony.Patch(
 					AccessTools.Method(typeof(Mission), "MeleeHitCallback"),
 					prefix: new HarmonyMethod(typeof(HarmonyPatches), nameof(Mission_MeleeHitCallback_Prefix)));
+				_patchedMinimumThrustMomentum = true;
 			}
 			else if (_patchedMinimumThrustMomentum)
 			{
