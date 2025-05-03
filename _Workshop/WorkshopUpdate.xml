@@ -4,7 +4,7 @@
         <!-- Can be found in the URL of your workshop item -->
     </GetItem>
     <UpdateItem>
-        <ModuleFolder Value="F:\Steam\SteamApps\common\Mount &amp; Blade II Bannerlord\Modules\0CustomPatches"/>
+        <ModuleFolder Value="F:\Steam\SteamApps\common\Mount &amp; Blade II Bannerlord\Modules\SyUtilityPatches"/>
         <!-- A direct path of your module -->
         <ChangeNotes Value="Patch notes" />
         <!-- Insert patch notes -->
