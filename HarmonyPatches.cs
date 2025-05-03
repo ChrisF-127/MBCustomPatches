@@ -524,7 +524,7 @@ namespace SyUtilityPatches
 		}
 		private static void CompanionsCampaignBehavior_get_desiredTotalCompanionCount_Postfix(ref float __result)
 		{
-			FileLog.Log($"Companion count: {__result} * {SyUtilityPatches.Settings.WandererSpawnLimitModifier} = {__result * SyUtilityPatches.Settings.WandererSpawnLimitModifier}");
+			//FileLog.Log($"Companion count: {__result} * {SyUtilityPatches.Settings.WandererSpawnLimitModifier} = {__result * SyUtilityPatches.Settings.WandererSpawnLimitModifier}");
 			__result *= SyUtilityPatches.Settings.WandererSpawnLimitModifier;
 		}
 		private static IEnumerable<CodeInstruction> CompanionsCampaignBehavior_OnNewGameCreated_Transpiler(IEnumerable<CodeInstruction> codeInstructions)
