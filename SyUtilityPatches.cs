@@ -20,7 +20,6 @@ namespace SyUtilityPatches
 	public class SyUtilityPatches : MBSubModuleBase
 	{
 		public static MCMSettings Settings { get; private set; } = null;
-		public static HarmonyPatches HarmonyPatches { get; private set; } = null;
 
 		private bool isInitialized = false;
 
@@ -33,7 +32,7 @@ namespace SyUtilityPatches
 			try
 			{
 				Settings = GlobalSettings<MCMSettings>.Instance ?? throw new Exception("Settings is null");
-				HarmonyPatches = new HarmonyPatches();
+				HarmonyPatches.Initialize();
 				Settings.ApplySettings();
 				isInitialized = true;
 			}

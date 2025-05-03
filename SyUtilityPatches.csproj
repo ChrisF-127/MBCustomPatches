@@ -70,17 +70,17 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Bannerlord.MCM">
-      <Version>5.9.2</Version>
+      <Version>5.10.2</Version>
     </PackageReference>
     <PackageReference Include="Bannerlord.ReferenceAssemblies">
-      <Version>1.2.9.34019</Version>
+      <Version>1.2.12.66233</Version>
     </PackageReference>
     <PackageReference Include="Lib.Harmony">
-      <Version>2.2.2</Version>
+      <Version>2.3.6</Version>
     </PackageReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>call D:\0Stuff\MB2_Bannerlord\Mods\Deploy.bat $(SolutionDir) $(TargetDir) $(TargetName)</PostBuildEvent>
+    <PostBuildEvent>call D:\0Stuff\2Games\MB2_Bannerlord\Mods\_deploy.bat $(SolutionDir) $(TargetDir) $(TargetName)</PostBuildEvent>
   </PropertyGroup>
 </Project>

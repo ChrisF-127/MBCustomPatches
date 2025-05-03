@@ -25,8 +25,6 @@ namespace SyUtilityPatches
 		public override string FolderName => "SyUtilityPatches";
 		public override string FormatType => "json";
 
-		private HarmonyPatches HarmonyPatches => SyUtilityPatches.HarmonyPatches;
-
 		private float _crosshairOpacity = 1f;
 		[SettingPropertyFloatingInteger(
 			"Crosshair Opacity",
@@ -45,7 +43,7 @@ namespace SyUtilityPatches
 			set
 			{
 				_crosshairOpacity = value;
-				HarmonyPatches?.PatchCrosshairOpacity(_crosshairOpacity != 1f);
+				HarmonyPatches.PatchCrosshairOpacity(_crosshairOpacity != 1f);
 			}
 		}
 
@@ -64,7 +62,7 @@ namespace SyUtilityPatches
 			set
 			{
 				_unlockAllParts = value;
-				HarmonyPatches?.PatchUnlockAllParts(_unlockAllParts);
+				HarmonyPatches.PatchUnlockAllParts(_unlockAllParts);
 			}
 		}
 
@@ -83,7 +81,7 @@ namespace SyUtilityPatches
 			set
 			{
 				_allowAllQuality = value;
-				HarmonyPatches?.PatchAllowAllQuality(_allowAllQuality);
+				HarmonyPatches.PatchAllowAllQuality(_allowAllQuality);
 			}
 		}
 
@@ -102,7 +100,7 @@ namespace SyUtilityPatches
 			set
 			{
 				_alwaysWar = value;
-				HarmonyPatches?.PatchAlwaysWar(_alwaysWar);
+				HarmonyPatches.PatchAlwaysWar(_alwaysWar);
 			}
 		}
 
@@ -124,7 +122,7 @@ namespace SyUtilityPatches
 			set
 			{
 				_partySpeedModifier = value;
-				HarmonyPatches?.PatchPartySpeed(_partySpeedModifier != 1f);
+				HarmonyPatches.PatchPartySpeed(_partySpeedModifier != 1f);
 			}
 		}
 
@@ -146,7 +144,7 @@ namespace SyUtilityPatches
 			set
 			{
 				_minimumThrustMomentum = value;
-				HarmonyPatches?.PatchMinimumThrustMomentum(_minimumThrustMomentum != 0f);
+				HarmonyPatches.PatchMinimumThrustMomentum(_minimumThrustMomentum != 0f);
 			}
 		}
 
@@ -165,7 +163,7 @@ namespace SyUtilityPatches
 			set
 			{
 				_showCultureInTooltip = value;
-				HarmonyPatches?.PatchShowCultureInTooltip(_showCultureInTooltip);
+				HarmonyPatches.PatchShowCultureInTooltip(_showCultureInTooltip);
 			}
 		}
 
@@ -188,7 +186,7 @@ namespace SyUtilityPatches
 				if (value)
 					ScoreboardShowAllTroops = false;
 				_combatBalanceShowAllTroops = value;
-				HarmonyPatches?.PatchCombatBalanceShowAllTroops(_combatBalanceShowAllTroops);
+				HarmonyPatches.PatchCombatBalanceShowAllTroops(_combatBalanceShowAllTroops);
 				OnPropertyChanged(nameof(CombatBalanceShowAllTroops));
 			}
 		}
@@ -211,8 +209,30 @@ namespace SyUtilityPatches
 				if (value)
 					CombatBalanceShowAllTroops = false;
 				_scoreboardShowAllTroops = value;
-				HarmonyPatches?.PatchScoreboardShowAllTroops(_scoreboardShowAllTroops);
+				HarmonyPatches.PatchScoreboardShowAllTroops(_scoreboardShowAllTroops);
 				OnPropertyChanged(nameof(ScoreboardShowAllTroops));
+			}
+		}
+
+		private float _wandererSpawnLimitModifier = 1f;
+		[SettingPropertyFloatingInteger(
+			"Wanderer Spawn Limit Modifier",
+			0f,
+			10f,
+			"0.00",
+			RequireRestart = false,
+			HintText = " [Native: 1.00]",
+			Order = 9)]
+		[SettingPropertyGroup(
+			"Settings",
+			GroupOrder = 0)]
+		public float WandererSpawnLimitModifier
+		{
+			get => _wandererSpawnLimitModifier;
+			set
+			{
+				_wandererSpawnLimitModifier = value;
+				HarmonyPatches.PatchCompanionLimit(_wandererSpawnLimitModifier != 1f);
 			}
 		}
 
@@ -295,6 +315,7 @@ namespace SyUtilityPatches
 			HarmonyPatches.PatchShowCultureInTooltip(ShowCultureInTooltip);
 			HarmonyPatches.PatchCombatBalanceShowAllTroops(CombatBalanceShowAllTroops);
 			HarmonyPatches.PatchScoreboardShowAllTroops(ScoreboardShowAllTroops);
+			HarmonyPatches.PatchCompanionLimit(WandererSpawnLimitModifier != 1f);
 		}
 	}
 }

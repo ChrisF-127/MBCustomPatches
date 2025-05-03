@@ -27,22 +27,23 @@ using TaleWorlds.MountAndBlade.GauntletUI.Widgets.Mission;
 using TaleWorlds.MountAndBlade.View.MissionViews;
 using TaleWorlds.MountAndBlade.ViewModelCollection.Scoreboard;
 using TaleWorlds.TwoDimension;
+using TaleWorlds.CampaignSystem.Settlements;
 
 namespace SyUtilityPatches
 {
-	public class HarmonyPatches
+	public static class HarmonyPatches
 	{
-		private Harmony Harmony { get; }
+		private static Harmony Harmony { get; set; }
 
-		public HarmonyPatches()
+		public static void Initialize()
 		{
 			Harmony = new Harmony("sy.utilitypatches");
 			PatchAgentMeshCrashPrevention();
 		}
 
 		#region CROSSHAIR OPACITY
-		private bool _patchedCrosshairOpacity = false;
-		public void PatchCrosshairOpacity(bool apply)
+		private static bool _patchedCrosshairOpacity = false;
+		public static void PatchCrosshairOpacity(bool apply)
 		{
 			if (apply && !_patchedCrosshairOpacity)
 			{
@@ -51,7 +52,7 @@ namespace SyUtilityPatches
 					postfix: new HarmonyMethod(typeof(HarmonyPatches), nameof(CrosshairWidget_OnUpdate_Postfix)));
 				_patchedCrosshairOpacity = true;
 			}
-			else if (_patchedCrosshairOpacity)
+			else if (!apply && _patchedCrosshairOpacity)
 			{
 				Harmony.Unpatch(
 					AccessTools.Method(typeof(CrosshairWidget), "OnUpdate"),
@@ -76,8 +77,8 @@ namespace SyUtilityPatches
 		#endregion
 
 		#region UNLOCK ALL SMITHING PARTS
-		private bool _patchedUnlockAllParts = false;
-		public void PatchUnlockAllParts(bool apply)
+		private static bool _patchedUnlockAllParts = false;
+		public static void PatchUnlockAllParts(bool apply)
 		{
 			if (apply && !_patchedUnlockAllParts)
 			{
@@ -86,7 +87,7 @@ namespace SyUtilityPatches
 					postfix: new HarmonyMethod(typeof(HarmonyPatches), nameof(CraftingCampaignBehavior_IsOpened_Postfix)));
 				_patchedUnlockAllParts = true;
 			}
-			else if (_patchedUnlockAllParts)
+			else if (!apply && _patchedUnlockAllParts)
 			{
 				Harmony.Unpatch(
 					AccessTools.Method(typeof(CraftingCampaignBehavior), "IsOpened"),
@@ -101,8 +102,8 @@ namespace SyUtilityPatches
 		#endregion
 
 		#region ALLOW ALL QUALITY
-		private bool _patchedAllowAllQuality = false;
-		public void PatchAllowAllQuality(bool apply)
+		private static bool _patchedAllowAllQuality = false;
+		public static void PatchAllowAllQuality(bool apply)
 		{
 			if (apply && !_patchedAllowAllQuality)
 			{
@@ -111,7 +112,7 @@ namespace SyUtilityPatches
 					prefix: new HarmonyMethod(typeof(HarmonyPatches), nameof(DefaultSmithingModel_AdjustQualityRegardingDesignTier_Prefix)));
 				_patchedAllowAllQuality = true;
 			}
-			else if (_patchedAllowAllQuality)
+			else if (!apply && _patchedAllowAllQuality)
 			{
 				Harmony.Unpatch(
 					AccessTools.Method(typeof(DefaultSmithingModel), "AdjustQualityRegardingDesignTier"),
@@ -127,8 +128,8 @@ namespace SyUtilityPatches
 		#endregion
 
 		#region ALWAYS WAR
-		private bool _patchedAlwaysWar = false;
-		public void PatchAlwaysWar(bool apply)
+		private static bool _patchedAlwaysWar = false;
+		public static void PatchAlwaysWar(bool apply)
 		{
 			if (apply && !_patchedAlwaysWar)
 			{
@@ -140,7 +141,7 @@ namespace SyUtilityPatches
 					postfix: new HarmonyMethod(typeof(HarmonyPatches), nameof(KingdomDecisionProposalBehavior_ConsiderWar_Postfix)));
 				_patchedAlwaysWar = true;
 			}
-			else if (_patchedAlwaysWar)
+			else if (!apply && _patchedAlwaysWar)
 			{
 				Harmony.Unpatch(
 					AccessTools.Method(typeof(DeclareWarDecision), "DetermineSupport"),
@@ -162,8 +163,8 @@ namespace SyUtilityPatches
 		#endregion
 
 		#region PARTY SPEED
-		private bool _patchedPartySpeed = false;
-		public void PatchPartySpeed(bool apply)
+		private static bool _patchedPartySpeed = false;
+		public static void PatchPartySpeed(bool apply)
 		{
 			if (apply && !_patchedPartySpeed)
 			{
@@ -172,7 +173,7 @@ namespace SyUtilityPatches
 					postfix: new HarmonyMethod(typeof(HarmonyPatches), nameof(DefaultPartySpeedCalculatingModel_CalculateBaseSpeedForParty_Postfix)));
 				_patchedPartySpeed = true;
 			}
-			else if (_patchedPartySpeed)
+			else if (!apply && _patchedPartySpeed)
 			{
 				Harmony.Unpatch(
 					AccessTools.Method(typeof(DefaultPartySpeedCalculatingModel), "CalculateBaseSpeedForParty"),
@@ -187,8 +188,8 @@ namespace SyUtilityPatches
 		#endregion
 
 		#region MINIMUM THRUST MOMENTUM
-		private bool _patchedMinimumThrustMomentum = false;
-		public void PatchMinimumThrustMomentum(bool apply)
+		private static bool _patchedMinimumThrustMomentum = false;
+		public static void PatchMinimumThrustMomentum(bool apply)
 		{
 			if (apply && !_patchedMinimumThrustMomentum)
 			{
@@ -197,7 +198,7 @@ namespace SyUtilityPatches
 					prefix: new HarmonyMethod(typeof(HarmonyPatches), nameof(Mission_MeleeHitCallback_Prefix)));
 				_patchedMinimumThrustMomentum = true;
 			}
-			else if (_patchedMinimumThrustMomentum)
+			else if (!apply && _patchedMinimumThrustMomentum)
 			{
 				Harmony.Unpatch(
 					AccessTools.Method(typeof(Mission), "MeleeHitCallback"),
@@ -212,8 +213,8 @@ namespace SyUtilityPatches
 		#endregion
 
 		#region SHOW CULTURE IN TOOLTIP
-		private bool _patchedShowCultureInTooltip = false;
-		public void PatchShowCultureInTooltip(bool apply)
+		private static bool _patchedShowCultureInTooltip = false;
+		public static void PatchShowCultureInTooltip(bool apply)
 		{
 			if (apply && !_patchedShowCultureInTooltip)
 			{
@@ -222,7 +223,7 @@ namespace SyUtilityPatches
 					transpiler: new HarmonyMethod(typeof(HarmonyPatches), nameof(ItemMenuVM_SetGeneralComponentTooltip_Transpiler)));
 				_patchedShowCultureInTooltip = true;
 			}
-			else if (_patchedShowCultureInTooltip)
+			else if (!apply && _patchedShowCultureInTooltip)
 			{
 				Harmony.Unpatch(
 					AccessTools.Method(typeof(ItemMenuVM), "SetGeneralComponentTooltip"),
@@ -337,8 +338,8 @@ namespace SyUtilityPatches
 
 		#region COMBAT BALANCE BAR / SCOREBOARD
 		#region COMBAT BALANCE BAR
-		private bool _patchedCombatBalanceShowAllTroops;
-		public void PatchCombatBalanceShowAllTroops(bool apply)
+		private static bool _patchedCombatBalanceShowAllTroops;
+		public static void PatchCombatBalanceShowAllTroops(bool apply)
 		{
 			if (apply && !_patchedCombatBalanceShowAllTroops && !_patchedScoreboardShowAllTroops)
 			{
@@ -347,7 +348,7 @@ namespace SyUtilityPatches
 					prefix: new HarmonyMethod(typeof(HarmonyPatches), nameof(SPScoreboardSideVM_RefreshPower_Prefix)));
 				_patchedCombatBalanceShowAllTroops = true;
 			} 
-			else if (_patchedCombatBalanceShowAllTroops)
+			else if (!apply && _patchedCombatBalanceShowAllTroops)
 			{
 				Harmony.Unpatch(
 					AccessTools.Method(typeof(SPScoreboardSideVM), "RefreshPower"),
@@ -412,8 +413,8 @@ namespace SyUtilityPatches
 		#endregion
 
 		#region SCOREBOARD
-		private bool _patchedScoreboardShowAllTroops;
-		public void PatchScoreboardShowAllTroops(bool apply)
+		private static bool _patchedScoreboardShowAllTroops;
+		public static void PatchScoreboardShowAllTroops(bool apply)
 		{
 			if (apply && !_patchedScoreboardShowAllTroops && !_patchedCombatBalanceShowAllTroops)
 			{
@@ -496,8 +497,63 @@ namespace SyUtilityPatches
 		#endregion
 		#endregion
 
+		#region COMPANION LIMIT
+		private static bool _patchedCompanionLimit = false;
+		public static void PatchCompanionLimit(bool apply)
+		{
+			if (apply && !_patchedCompanionLimit)
+			{
+				Harmony.Patch(
+					AccessTools.PropertyGetter(typeof(CompanionsCampaignBehavior), "_desiredTotalCompanionCount"),
+					postfix: new HarmonyMethod(typeof(HarmonyPatches), nameof(CompanionsCampaignBehavior_get_desiredTotalCompanionCount_Postfix)));
+				Harmony.Patch(
+					AccessTools.Method(typeof(CompanionsCampaignBehavior), "OnNewGameCreated"),
+					transpiler: new HarmonyMethod(typeof(HarmonyPatches), nameof(CompanionsCampaignBehavior_OnNewGameCreated_Transpiler)));
+				_patchedCompanionLimit = true;
+			}
+			else if (!apply && _patchedCompanionLimit)
+			{
+				Harmony.Unpatch(
+					AccessTools.PropertyGetter(typeof(CompanionsCampaignBehavior), "_desiredTotalCompanionCount"),
+					AccessTools.Method(typeof(HarmonyPatches), nameof(CompanionsCampaignBehavior_get_desiredTotalCompanionCount_Postfix)));
+				Harmony.Unpatch(
+					AccessTools.Method(typeof(CompanionsCampaignBehavior), "OnNewGameCreated"),
+					AccessTools.Method(typeof(HarmonyPatches), nameof(CompanionsCampaignBehavior_OnNewGameCreated_Transpiler)));
+				_patchedCompanionLimit = false;
+			}
+		}
+		private static void CompanionsCampaignBehavior_get_desiredTotalCompanionCount_Postfix(ref float __result)
+		{
+			FileLog.Log($"Companion count: {__result} * {SyUtilityPatches.Settings.WandererSpawnLimitModifier} = {__result * SyUtilityPatches.Settings.WandererSpawnLimitModifier}");
+			__result *= SyUtilityPatches.Settings.WandererSpawnLimitModifier;
+		}
+		private static IEnumerable<CodeInstruction> CompanionsCampaignBehavior_OnNewGameCreated_Transpiler(IEnumerable<CodeInstruction> codeInstructions)
+		{
+			var list = codeInstructions.ToList();
+			var patched = false;
+
+			for (int i = 0; i < list.Count; i++)
+			{
+				if (list[i].opcode == OpCodes.Callvirt && list[i].operand is MethodInfo mi && mi.Name == "get_Item")
+				{
+					list.Insert(i++, new CodeInstruction(OpCodes.Ldloc_0));
+					list.Insert(i++, new CodeInstruction(OpCodes.Callvirt, AccessTools.PropertyGetter(typeof(List<Town>), nameof(List<Town>.Count))));
+					list.Insert(i++, new CodeInstruction(OpCodes.Rem));
+
+					patched = true;
+					break;
+				}
+			}
+
+			if (!patched)
+				SyUtilityPatches.Message($"{nameof(SyUtilityPatches)}: failed to apply {nameof(CompanionsCampaignBehavior_OnNewGameCreated_Transpiler)}", false);
+
+			return list;
+		}
+		#endregion
+
 		#region MISSING AGENT MESH CRASH PREVENTION
-		public void PatchAgentMeshCrashPrevention()
+		public static void PatchAgentMeshCrashPrevention()
 		{
 			Harmony.Patch(
 				AccessTools.Method(typeof(MissionAgentLabelView), "SetHighlightForAgents"),
