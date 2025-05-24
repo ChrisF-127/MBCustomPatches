@@ -20,6 +20,7 @@ namespace SyUtilityPatches
 	public class SyUtilityPatches : MBSubModuleBase
 	{
 		public static MCMSettings Settings { get; private set; } = null;
+		public static bool GameRunning { get; private set; } = false;
 
 		private bool isInitialized = false;
 
@@ -33,13 +34,29 @@ namespace SyUtilityPatches
 			{
 				Settings = GlobalSettings<MCMSettings>.Instance ?? throw new Exception("Settings is null");
 				HarmonyPatches.Initialize();
-				Settings.ApplySettings();
 				isInitialized = true;
 			}
 			catch (Exception exc)
 			{
 				Message($"{nameof(SyUtilityPatches)}: Initializing Settings failed: {exc.GetType()}: {exc.Message}\n{exc.StackTrace}", false);
 			}
+		}
+		public override void OnNewGameCreated(Game game, object initializerObject)
+		{
+			base.OnNewGameCreated(game, initializerObject);
+			Settings.ApplySettings();
+			GameRunning = true;
+		}
+		public override void OnGameLoaded(Game game, object initializerObject)
+		{
+			base.OnGameLoaded(game, initializerObject);
+			Settings.ApplySettings();
+			GameRunning = true;
+		}
+		public override void OnGameEnd(Game game)
+		{
+			base.OnGameEnd(game);
+			GameRunning = false;
 		}
 
 		internal static void Message(string s, bool stacktrace = true, Color? color = null, bool log = true)

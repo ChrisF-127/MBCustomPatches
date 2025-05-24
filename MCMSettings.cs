@@ -5,6 +5,7 @@ using MCM.Abstractions.Base.Global;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 using TaleWorlds.CampaignSystem;
@@ -42,8 +43,9 @@ namespace SyUtilityPatches
 			get => _crosshairOpacity;
 			set
 			{
-				_crosshairOpacity = value;
-				HarmonyPatches.PatchCrosshairOpacity(_crosshairOpacity != 1f);
+				SetProperty(ref _crosshairOpacity, value);
+				if (SyUtilityPatches.GameRunning)
+					HarmonyPatches.PatchCrosshairOpacity(_crosshairOpacity != 1f);
 			}
 		}
 
@@ -61,8 +63,9 @@ namespace SyUtilityPatches
 			get => _unlockAllParts;
 			set
 			{
-				_unlockAllParts = value;
-				HarmonyPatches.PatchUnlockAllParts(_unlockAllParts);
+				SetProperty(ref _unlockAllParts, value)	;
+				if (SyUtilityPatches.GameRunning)
+					HarmonyPatches.PatchUnlockAllParts(_unlockAllParts);
 			}
 		}
 
@@ -80,8 +83,9 @@ namespace SyUtilityPatches
 			get => _allowAllQuality;
 			set
 			{
-				_allowAllQuality = value;
-				HarmonyPatches.PatchAllowAllQuality(_allowAllQuality);
+				SetProperty(ref _allowAllQuality, value);
+				if (SyUtilityPatches.GameRunning)
+					HarmonyPatches.PatchAllowAllQuality(_allowAllQuality);
 			}
 		}
 
@@ -99,8 +103,9 @@ namespace SyUtilityPatches
 			get => _alwaysWar;
 			set
 			{
-				_alwaysWar = value;
-				HarmonyPatches.PatchAlwaysWar(_alwaysWar);
+				SetProperty(ref _alwaysWar, value);
+				if (SyUtilityPatches.GameRunning)
+					HarmonyPatches.PatchAlwaysWar(_alwaysWar);
 			}
 		}
 
@@ -121,8 +126,9 @@ namespace SyUtilityPatches
 			get => _partySpeedModifier;
 			set
 			{
-				_partySpeedModifier = value;
-				HarmonyPatches.PatchPartySpeed(_partySpeedModifier != 1f);
+				SetProperty(ref _partySpeedModifier, value);
+				if (SyUtilityPatches.GameRunning)
+					HarmonyPatches.PatchPartySpeed(_partySpeedModifier != 1f);
 			}
 		}
 
@@ -143,8 +149,9 @@ namespace SyUtilityPatches
 			get => _minimumThrustMomentum;
 			set
 			{
-				_minimumThrustMomentum = value;
-				HarmonyPatches.PatchMinimumThrustMomentum(_minimumThrustMomentum != 0f);
+				SetProperty(ref _minimumThrustMomentum, value);
+				if (SyUtilityPatches.GameRunning)
+					HarmonyPatches.PatchMinimumThrustMomentum(_minimumThrustMomentum != 0f);
 			}
 		}
 
@@ -162,8 +169,9 @@ namespace SyUtilityPatches
 			get => _showCultureInTooltip;
 			set
 			{
-				_showCultureInTooltip = value;
-				HarmonyPatches.PatchShowCultureInTooltip(_showCultureInTooltip);
+				SetProperty(ref _showCultureInTooltip, value);
+				if (SyUtilityPatches.GameRunning)
+					HarmonyPatches.PatchShowCultureInTooltip(_showCultureInTooltip);
 			}
 		}
 
@@ -185,9 +193,9 @@ namespace SyUtilityPatches
 			{
 				if (value)
 					ScoreboardShowAllTroops = false;
-				_combatBalanceShowAllTroops = value;
-				HarmonyPatches.PatchCombatBalanceShowAllTroops(_combatBalanceShowAllTroops);
-				OnPropertyChanged(nameof(CombatBalanceShowAllTroops));
+				SetProperty(ref _combatBalanceShowAllTroops, value);
+				if (SyUtilityPatches.GameRunning)
+					HarmonyPatches.PatchCombatBalanceShowAllTroops(_combatBalanceShowAllTroops);
 			}
 		}
 		private bool _scoreboardShowAllTroops = false;
@@ -208,9 +216,9 @@ namespace SyUtilityPatches
 			{
 				if (value)
 					CombatBalanceShowAllTroops = false;
-				_scoreboardShowAllTroops = value;
-				HarmonyPatches.PatchScoreboardShowAllTroops(_scoreboardShowAllTroops);
-				OnPropertyChanged(nameof(ScoreboardShowAllTroops));
+				SetProperty(ref _scoreboardShowAllTroops, value);
+				if (SyUtilityPatches.GameRunning)
+					HarmonyPatches.PatchScoreboardShowAllTroops(_scoreboardShowAllTroops);
 			}
 		}
 
@@ -231,8 +239,9 @@ namespace SyUtilityPatches
 			get => _wandererSpawnLimitModifier;
 			set
 			{
-				_wandererSpawnLimitModifier = value;
-				HarmonyPatches.PatchCompanionLimit(_wandererSpawnLimitModifier != 1f);
+				SetProperty(ref _wandererSpawnLimitModifier, value);
+				if (SyUtilityPatches.GameRunning)
+					HarmonyPatches.PatchCompanionLimit(_wandererSpawnLimitModifier != 1f);
 			}
 		}
 
@@ -306,16 +315,34 @@ namespace SyUtilityPatches
 
 		public void ApplySettings()
 		{
-			HarmonyPatches.PatchCrosshairOpacity(CrosshairOpacity != 1f);
-			HarmonyPatches.PatchUnlockAllParts(UnlockAllParts);
-			HarmonyPatches.PatchAllowAllQuality(AllowAllQuality);
-			HarmonyPatches.PatchAlwaysWar(AlwaysWar);
-			HarmonyPatches.PatchPartySpeed(PartySpeedModifier != 1f);
-			HarmonyPatches.PatchMinimumThrustMomentum(MinimumThrustMomentum != 0f);
-			HarmonyPatches.PatchShowCultureInTooltip(ShowCultureInTooltip);
-			HarmonyPatches.PatchCombatBalanceShowAllTroops(CombatBalanceShowAllTroops);
-			HarmonyPatches.PatchScoreboardShowAllTroops(ScoreboardShowAllTroops);
-			HarmonyPatches.PatchCompanionLimit(WandererSpawnLimitModifier != 1f);
+			try
+			{
+				HarmonyPatches.PatchCrosshairOpacity(CrosshairOpacity != 1f);
+				HarmonyPatches.PatchUnlockAllParts(UnlockAllParts);
+				HarmonyPatches.PatchAllowAllQuality(AllowAllQuality);
+				HarmonyPatches.PatchAlwaysWar(AlwaysWar);
+				HarmonyPatches.PatchPartySpeed(PartySpeedModifier != 1f);
+				HarmonyPatches.PatchMinimumThrustMomentum(MinimumThrustMomentum != 0f);
+				HarmonyPatches.PatchShowCultureInTooltip(ShowCultureInTooltip);
+				HarmonyPatches.PatchCombatBalanceShowAllTroops(CombatBalanceShowAllTroops);
+				HarmonyPatches.PatchScoreboardShowAllTroops(ScoreboardShowAllTroops);
+				HarmonyPatches.PatchCompanionLimit(WandererSpawnLimitModifier != 1f);
+			}
+			catch (Exception exc)
+			{
+				SyUtilityPatches.Message($"{nameof(SyUtilityPatches)}: apply settings failed: {exc.GetType()}: {exc.Message}\n{exc.StackTrace}", false);
+			}
+		}
+
+
+		private void SetProperty<T>(ref T storage, T value, [CallerMemberName] string name = "")
+		{
+			if (storage?.Equals(value) != true)
+			{
+				//SyUtilityPatches.Message($"SET {name}: {storage} -> {value}", false, Colors.White);
+				storage = value;
+				OnPropertyChanged(name);
+			}
 		}
 	}
 }
